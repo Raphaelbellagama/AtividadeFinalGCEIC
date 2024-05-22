@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const request = require('supertest');
-const app = require('../src/server'); // Certifique-se de que o caminho está correto
+const app = require('../src/server');
 const expect = chai.expect;
 
 chai.use(chaiHttp);
