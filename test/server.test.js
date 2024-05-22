@@ -1,6 +1,6 @@
 const request = require('supertest');
 const expect = require('chai').expect;
-const server = require('../src/server'); // Assegure-se de que esta é a importação correta
+const server = require('../src/server'); 
 
 describe('API /calculate', () => {
     it('should calculate the volume of a cylinder', (done) => {
