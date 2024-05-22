@@ -1,0 +1,22 @@
+{
+  "name": "atividadefinalgceic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "mocha": "^8.4.0",
+    "chai": "^4.3.4"
+  }
+}
