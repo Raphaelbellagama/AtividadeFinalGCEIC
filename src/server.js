@@ -17,8 +17,16 @@ app.post('/calculate', (req, res) => {
     }
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
 });
 
-module.exports = app; // Exporta o app para fins de teste
+// Adiciona um manipulador de eventos para fechar o servidor quando o processo terminar
+process.on('SIGTERM', () => {
+    console.log('Closing server...');
+    server.close(() => {
+        console.log('Server closed.');
+    });
+});
+
+module.exports = server; // Exporta o app para fins de teste
