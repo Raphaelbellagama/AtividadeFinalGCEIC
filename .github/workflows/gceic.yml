@@ -1,0 +1,99 @@
+name: Projeto Final GCEIC 2024
+on: [push]
+jobs:
+
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gera saída do Github context
+        run: echo "${{ toJSON(github) }}"
+      - name: Mostra mensagem
+        run: echo "Alo turma"
+      - name: Lista diretório
+        run: ls -la 
+
+  getCode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code from repository to evaluate
+        uses: actions/checkout@v3
+      - name: Lista diretório
+        run: ls -la 
+      - name: Desce um diretório
+        run: cd ..  
+      - name: Lista
+        run: ls -la 
+      - name: Lista work directory
+        run: ls -la /home/runner/work/projeto_GCEIC24/projeto_GCEIC24
+      - name: Lista work directory fotos
+        run: ls -la /home/runner/work/projeto_GCEIC24/projeto_GCEIC24/fotos
+
+  test:
+    needs: getCode
+    permissions: write-all
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Get Code from repository
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Instala Dependências
+        run: npm ci
+      - name: Run Lint
+        run: npm run lint
+      - name: Roda os testes
+        run: npm test
+      - name: Gera o Relatório dos testes
+        uses: dorny/test-reporter@v1
+        if: success() || failure()  # roda de qualquer maneira
+        with:
+          name: JEST tests
+          path: j*.xml
+          reporter: jest-junit
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Faz sincronismo com o Glitch
+        uses: kanadgupta/glitch-sync@v3.0.1
+        with:
+            auth-token: '${{ secrets.authToken }}'
+            project-id: '${{ secrets.projectId }}'
+
+  funcional:
+    needs: deploy
+    permissions: write-all
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Instala Dependências
+        run: npm ci        
+      - name: Run teste Funcional no glitch
+        run: npm run F-test
+      - name: Lista work directory
+        run: ls -la /home/runner/work/projeto_GCEIC24/projeto_GCEIC24
+      - name: Lista work directory fotos
+        run: ls -la /home/runner/work/projeto_GCEIC24/projeto_GCEIC24/fotos      
+      - name: Lista work directory fotos exemplo
+        run: ls -la /home/runner/work/projeto_GCEIC24/projeto_GCEIC24/fotos/exemplo      
+      - name: Fotos da tela
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fotos dos testes
+          path: /home/runner/work/projeto_GCEIC24/projeto_GCEIC24/fotos/exemplo/*.png
